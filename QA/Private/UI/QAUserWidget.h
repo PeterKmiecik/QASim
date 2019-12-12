@@ -19,13 +19,17 @@ class UQAUserWidget : public UUserWidget
 
 public:
 
-	/* // Initial Setup function Exposed to BPs  */
-	UFUNCTION(BlueprintCallable)
+	/* // PROTO: working */
+	UFUNCTION(BlueprintCallable, Category = "@@@ QAUserWidget")
 	void GetAllButtonWidgets(TArray<class UButton*> & Array);
 
 	/* // Event to avoid ticking and for loops for active button check */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnButtonGainedFocus();
+
+	/** // Returns color which was present at creation of parent user widget overlay  */
+	UFUNCTION(BlueprintCallable, Category = "@@@ QAUserWidget")
+	FLinearColor GetFirstButtonOriginalColor(TArray<class UButton*> Array);
 
 	/*
 	//DECLARE_EVENT(FEventType, eventname);
@@ -38,6 +42,10 @@ public:
 	void RespondToOnButtonFocus(bool Question);
 	*/
 
-	/* // Overrided native class to add event in BPs for active buttons */
+	/* // Overrided native function to add event in BPs for active buttons */
 	virtual  FReply NativeOnFocusReceived( const FGeometry& InGeometry, const FFocusEvent& InFocusEvent ) override;
+
+	UPROPERTY(BlueprintReadWrite, Category = "@@@ QAUserWidget")
+	/** //Button color which wa present at creation of this button */
+	FLinearColor OriginalButtonColor;
 };

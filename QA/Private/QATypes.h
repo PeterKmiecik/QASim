@@ -34,9 +34,8 @@ public:
 	UQATypes();
 	~UQATypes();
 
-/* // Enum containing GameModes of all games playable
-// leave Default empty
-*/
+	/* //  Enum containing Widgets of all games playable
+	// leave Default empty   */
 	UPROPERTY(BlueprintReadWrite, Category = "@@@ QA Enums")
 	EGameModeWidgets eGameModeWidgets;
 

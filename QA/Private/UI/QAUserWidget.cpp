@@ -9,50 +9,47 @@
 #include "Runtime/SlateCore/Public/Input/Reply.h"
 
  void UQAUserWidget::GetAllButtonWidgets(TArray< UButton*> & Array)
-{
+{   // //  TO DO DEMO: Clear this code
 
-	// TO DO Clear this code
 	UWidgetTree* WidgetTreeToGet = UQAUserWidget::WidgetTree;
-		//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: name of widgettree: %s       %s \n"), *WidgetTreeToGet->GetName(), *WidgetTreeToGet->GetClass()->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: name of rootwidget: %s \n"), *WidgetTreeToGet->RootWidget->GetName());
 	WidgetTreeToGet->RootWidget->bCanChildrenBeAccessible = 1;
 
 	TArray<UWidget*> Widgets;
 	WidgetTreeToGet->GetAllWidgets(Widgets);
-		//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %i \n"), Widgets.Num()); // daje 12, 
+		//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %i \n"), Widgets.Num()); // returns 12
 
-		//TODO Sprawdziæ, co daj¹ te widgety których jest wiecej 23 
 		/*WidgetTreeToGet->GetChildWidgets(WidgetTreeToGet->RootWidget, Widgets);
-			UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %i \n"), Widgets.Num());*/
+		UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %i \n"), Widgets.Num());*/ 		//TODO check what does these ~23 do here, which ones are these
+
 	
-		if (Widgets.IsValidIndex(1))
+	if (Widgets.IsValidIndex(1))
+	{
+		for (int32 Index = 0; Index != Widgets.Num(); ++Index)
 		{
-			for (int32 Index = 0; Index != Widgets.Num(); ++Index)
+		//	UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %s \n"), *Widgets.Last(Index)->GetName());
+		}
+
+		for (int32 Index = 0; Index != Widgets.Num(); ++Index)
+		{
+			UButton* button = Cast<UButton>(Widgets.Last(Index));
+
+			if (button->IsValidLowLevel())
 			{
-			//	UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %s \n"), *Widgets.Last(Index)->GetName());
-			}
+				Array.Add(button);
 
-			for (int32 Index = 0; Index != Widgets.Num(); ++Index)
+				//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of buttons %f \n"), Array.Num());
+			}
+			else
 			{
-				UButton* button = Cast<UButton>(Widgets.Last(Index));
-
-				if (button->IsValidLowLevel())
-				{
-					Array.Add(button);
-
-					//UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of buttons %f \n"), Array.Num());
-				}
-				else
-				{
-					//UE_LOG(LogTemp, Warning, TEXT("failed 		if (button)"));
-				}
+				//UE_LOG(LogTemp, Warning, TEXT("failed 		if (button)"));
 			}
+		}
 		
-		}
-		else
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("failed 		if (Widgets.IsValidIndex(1))"));
-		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UserWidget: %s failed code: if (Widgets.IsValidIndex(1)) which checks if any button widget was added to array of all Widgets"), *this->GetName());
+	}
 	
 }
 
@@ -60,23 +57,35 @@
  //{
  //}
 
+// // Returns color which was present at creation of parent user widget overlay
+ FLinearColor UQAUserWidget::GetFirstButtonOriginalColor(TArray<class UButton*> Array)
+ {
+	 if (Array.Num() > 0)
+	 {
+		UButton** PtrButton =  Array.GetData();
+		UButton* Button = *PtrButton;
+		if (Button)
+		{
+			OriginalButtonColor =  Button->ColorAndOpacity;
+		}
+	 }
+	 else
+	 {
+		 UE_LOG(LogTemp, Error, TEXT("UserWidget: %s Array passed to GetFirstButtonOriginalColor is empty !"), *this->GetName());
 
+	 }
+		 return OriginalButtonColor;
+ }
 
  FReply UQAUserWidget::NativeOnFocusReceived(const FGeometry & InGeometry, const FFocusEvent & InFocusEvent)
  {
-
-
-	  /* TODO aktualnie nie dzia³a. 
-	  dzia³a event: OnButtonGainedFocus ale nic nie robi a powinien:
+	  /* TODO not working currently
+	  event: OnButtonGainedFocus but it does't do antything, should :
 
 	  when key is focussed change its color
 	  override the onfocusreceived function and expose it to bps with event (bind to event)
 	  */
-
-	// OnButtonFocus.Broadcast(true);
-	 //UE_LOG(LogTemp, Warning, TEXT("NativeOnFocusReceived fired"));
-
-	 
+	
 	 OnButtonGainedFocus();
 
 	 return   FReply::Unhandled();
