@@ -1,3 +1,6 @@
+#My c++ coding/ue4 portfolio video: video: https://www.youtube.com/watch?v=2zz3d_9T67w
+(does not include this game since it is in early prototype stage)
+
 # QASim
 # Game Tester Simulator
  WIP game I'm making in my spare time. Currently in prototype state which is mostly done in BPs. I move to C++ only  what I really need at this state.
