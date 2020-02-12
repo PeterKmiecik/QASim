@@ -19,4 +19,5 @@ class QA_API UBPFL_Global : public UBlueprintFunctionLibrary
 public:
 
 	UBPFL_Global();
+
 };
