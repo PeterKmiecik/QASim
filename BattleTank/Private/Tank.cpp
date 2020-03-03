@@ -1,11 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Tank.h"
 #include "BattleTank.h"
+#include "Components/InputComponent.h"
 
 
 float ATank::GetHealthPercent() const
 {
 	return (float)CurrentHealth / (float)StartingHealth;
+}
+
+void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (!PlayerInputComponent) {
+		UE_LOG(LogTemp, Error, TEXT("[%s] NoPlayerInputComponent"), *this->GetName());
+		return;}
+
+	PlayerInputComponent->BindAxis("MouseX", this, &ATank::Turn);
+	PlayerInputComponent->BindAxis("MouseY", this, &ATank::LookUp);
+
 }
 
 // Sets default values
@@ -14,6 +27,27 @@ ATank::ATank()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 }
+
+
+
+void ATank::LookUp(float Value)
+{
+	if (Value != 0.0f)
+	{
+		AddControllerPitchInput(Value);
+	}
+}
+
+void ATank::Turn(float Value)
+{
+	if (Value != 0.0f)
+	{
+		AddControllerYawInput(Value);
+
+	}
+}
+
+
 
 void ATank::BeginPlay()
 {

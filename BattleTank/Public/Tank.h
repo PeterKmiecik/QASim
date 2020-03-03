@@ -22,9 +22,20 @@ public:
 
 	FTankDelegate OnDeath;
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+		void LookUp(float Value);
+
+	UFUNCTION()
+		void Turn(float Value);
+
+
 private:
 	// Sets default values for this pawn's properties
 	ATank();
+
+	
 
 	virtual void BeginPlay() override;
 
