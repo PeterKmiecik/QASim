@@ -1,9 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "TankPlayerController.h"
-
+#include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
 #include "Tank.h"
+#include "BT_UserWidget.h"
+
+ATankPlayerController::ATankPlayerController()
+{
+
+}
 
 void ATankPlayerController::SetPawn(APawn* InPawn)
 {
@@ -26,10 +33,30 @@ void ATankPlayerController::OnPossedTankDeath()
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!GetPawn()) return;
+	if (!GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s] no pawn found"), *this->GetName());
+		return;
+	}
+
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent)) { return; }
 	FoundAimingComponent(AimingComponent);
+
+	// WIDGETS ------------ //
+	if (wPlayerUI)
+	{
+		PlayerUI = CreateWidget<UBT_UserWidget>(this, wPlayerUI);
+		if (PlayerUI)
+		{
+			PlayerUI->AddToViewport();
+		}
+	}
+	else { UE_LOG(LogTemp, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
+
+
+
+	// WIDGETS ------------ //
 }
 
 void ATankPlayerController::Tick(float DeltaTime)

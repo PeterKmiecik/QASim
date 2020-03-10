@@ -7,7 +7,7 @@
 #include "QAUserWidget.generated.h"
 
 /**
- * 
+ * Base Widget class with autoatic button highlight and keyboard selection
  */
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewSth, bool, question);

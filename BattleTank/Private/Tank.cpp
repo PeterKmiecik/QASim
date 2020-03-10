@@ -4,9 +4,11 @@
 #include "Components/InputComponent.h"
 
 
-float ATank::GetHealthPercent() const
+ATank::ATank()
 {
-	return (float)CurrentHealth / (float)StartingHealth;
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
@@ -21,14 +23,18 @@ void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 
 }
 
-// Sets default values
-ATank::ATank()
+void ATank::BeginPlay()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	Super::BeginPlay();
+	CurrentHealth = StartingHealth;
 }
 
+float ATank::GetHealthPercent() const
+{
+	return (float)CurrentHealth / (float)StartingHealth;
 
+
+}
 
 void ATank::LookUp(float Value)
 {
@@ -45,14 +51,6 @@ void ATank::Turn(float Value)
 		AddControllerYawInput(Value);
 
 	}
-}
-
-
-
-void ATank::BeginPlay()
-{
-	Super::BeginPlay();
-	CurrentHealth = StartingHealth;
 }
 
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)

@@ -22,7 +22,7 @@
 		UE_LOG(LogTemp, Warning, TEXT("GetAllButtonWidgets: number of widgets %i \n"), Widgets.Num());*/ 		//TODO check what does these ~23 do here, which ones are these
 
 	
-	if (Widgets.IsValidIndex(1))
+	if ( Widgets.IsValidIndex(1))
 	{
 		for (int32 Index = 0; Index != Widgets.Num(); ++Index)
 		{
@@ -33,7 +33,7 @@
 		{
 			UButton* button = Cast<UButton>(Widgets.Last(Index));
 
-			if (button->IsValidLowLevel())
+			if ( button != NULL && button->IsValidLowLevel())
 			{
 				Array.Add(button);
 
@@ -41,14 +41,14 @@
 			}
 			else
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("failed 		if (button)"));
+				UE_LOG(LogTemp, Warning, TEXT("[%s] failed IsValidLowLevel (button)"),* this->GetName());
 			}
 		}
 		
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("UserWidget: %s failed code: if (Widgets.IsValidIndex(1)) which checks if any button widget was added to array of all Widgets"), *this->GetName());
+		UE_LOG(LogTemp, Error, TEXT("UserWidget: [%s] failed code: if (Widgets.IsValidIndex(1)) which checks if any button widget was added to array of all Widgets"), *this->GetName());
 	}
 	
 }
