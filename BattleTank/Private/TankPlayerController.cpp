@@ -50,6 +50,7 @@ void ATankPlayerController::BeginPlay()
 		if (PlayerUI)
 		{
 			PlayerUI->AddToViewport();
+			SetInputMode(FInputModeGameOnly());
 		}
 	}
 	else { UE_LOG(LogTemp, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }

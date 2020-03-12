@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "TankPlayerController.generated.h" // Must be the last include
+#include "TankPlayerController.generated.h"
 
 class UTankTankAimingComponent;
 
@@ -25,17 +25,20 @@ protected:
 	UFUNCTION()
 	void OnPossedTankDeath();
 
-private:
 
 	/* WIDGETS -------------------------  */
-
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ Tank Player Controller")
-	TSubclassOf<class UBT_UserWidget> wPlayerUI;
 
 	UPROPERTY(BlueprintReadOnly, Category = "@@@ Tank Player Controller")
-	UBT_UserWidget* PlayerUI;
+	class UBT_UserWidget* PlayerUI;
+
+	UPROPERTY()
+	TSubclassOf< UBT_UserWidget> wPlayerUI;
 
 	/* WIDGETS -------------------------  */
+
+private:
+
+
 
 	void SetPawn(APawn * InPawn);
 	virtual void BeginPlay() override;
