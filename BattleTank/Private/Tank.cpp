@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Tank.h"
 #include "BattleTank.h"
+#include "TankAimingComponent.h"
 #include "Components/InputComponent.h"
+#include "TankTurret.h"
 
 
 ATank::ATank()
@@ -9,6 +11,8 @@ ATank::ATank()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(TEXT("TankAimingComponent"));
+	//TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(TEXT("TankMovementComponent"));
 }
 
 void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
@@ -17,6 +21,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 	if (!PlayerInputComponent) {
 		UE_LOG(LogTemp, Error, TEXT("[%s] NoPlayerInputComponent"), *this->GetName());
 		return;}
+
 
 	PlayerInputComponent->BindAxis("MouseX", this, &ATank::Turn);
 	PlayerInputComponent->BindAxis("MouseY", this, &ATank::LookUp);
@@ -49,7 +54,6 @@ void ATank::Turn(float Value)
 	if (Value != 0.0f)
 	{
 		AddControllerYawInput(Value);
-
 	}
 }
 
@@ -65,3 +69,24 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	}
 	return DamageToApply;
 }
+
+void ATank::StabilizeTurretYaw() {
+
+	// // Zeroing Turret rotation casued by tank rotation
+	auto Turret = TankAimingComponent->GetTurret();
+	if (Turret)
+	{
+		FRotator CurrentTurretRotation = Turret->RelativeRotation;
+		FRotator TankRotation = this->GetActorRotation();
+		//	UE_LOG(LogTemp, Warning, TEXT("[%s] Relative toation: [%f]"), *this->GetName(), CurrentRotation.Yaw);
+
+		FRotator InverseTurretRotation = FRotator((CurrentTurretRotation.Yaw - TankRotation.Yaw ), 0.f, 0.f);
+
+
+		Turret->AddRelativeRotation(InverseTurretRotation);
+
+	}
+
+}
+
+

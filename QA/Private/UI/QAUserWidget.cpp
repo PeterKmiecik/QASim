@@ -12,7 +12,7 @@
 {   // //  TO DO DEMO: Clear this code
 
 	UWidgetTree* WidgetTreeToGet = UQAUserWidget::WidgetTree;
-	WidgetTreeToGet->RootWidget->bCanChildrenBeAccessible = 1;
+	//WidgetTreeToGet->RootWidget->bCanChildrenBeAccessible = 1;
 
 	TArray<UWidget*> Widgets;
 	WidgetTreeToGet->GetAllWidgets(Widgets);

@@ -55,8 +55,6 @@ void ATankPlayerController::BeginPlay()
 	}
 	else { UE_LOG(LogTemp, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
 
-
-
 	// WIDGETS ------------ //
 }
 
@@ -66,6 +64,9 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
+
+
+/* AIMING -----------------  ---------------- */
 void ATankPlayerController::AimTowardsCrosshair()
 {
 	if (!GetPawn()) { return; } // e.g. if not possessing
@@ -98,6 +99,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 	return false;
 }
 
+// // linetrace from specified looking direction. 
 bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const
 {
 	FHitResult HitResult;
@@ -117,6 +119,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 	return false; // Line trace didn't succeed
 }
 
+// // "De-project" the screen position of the crosshair to a world direction
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
 {
 	FVector CameraWorldLocation; // To be discarded
@@ -127,3 +130,4 @@ bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& 
 		LookDirection
 	);
 }
+/* AIMING ----------------  ---------------- */

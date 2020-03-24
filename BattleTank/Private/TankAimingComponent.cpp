@@ -6,7 +6,7 @@
 #include "TankTurret.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "DrawDebugHelpers.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -85,6 +85,11 @@ void UTankAimingComponent::AimAt(FVector HitLocation)
 		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace // Paramater must be present to prevent bug
 	);
+
+	if (bShowAimingTargetTraceLine)
+	{
+		DrawDebugLine(GetWorld(), StartLocation, HitLocation, FColor::Red, true, 10.f, 1, 2.f);
+	}
 
 	if (bHaveAimSolution)
 	{

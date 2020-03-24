@@ -4,16 +4,6 @@
 
 #include "BattleTank.h"
 
-void FBattleTank::StartupModule()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Orfeas module has started!"));
-}
-
-void FBattleTank::ShutdownModule()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Orfeas module has shut down"));
-}
-
 IMPLEMENT_GAME_MODULE(FDefaultModuleImpl, BattleTank);
 
 //#include "BattleTank.h"

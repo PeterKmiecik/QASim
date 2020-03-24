@@ -41,6 +41,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
 	int32 GetRoundsLeft() const;
 
+	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UTankBarrel* GetBarrel() { return Barrel; };
+	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UTankTurret* GetTurret() { return Turret; };
+
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "@@@ TankAimingComponent")
 	EFiringState FiringState = EFiringState::Reloading;
@@ -75,4 +80,8 @@ private:
 	double LastFireTime = 0;
 
 	FVector AimDirection;
+
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent - DEBUG")
+		bool bShowAimingTargetTraceLine = false;
+
 };
