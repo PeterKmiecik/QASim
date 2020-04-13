@@ -4,6 +4,7 @@
 #include "TankAimingComponent.h"
 #include "Components/InputComponent.h"
 #include "TankTurret.h"
+#include "Math/Rotator.h"
 
 
 ATank::ATank()
@@ -18,8 +19,8 @@ ATank::ATank()
 void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (!PlayerInputComponent) {
-		UE_LOG(LogTemp, Error, TEXT("[%s] NoPlayerInputComponent"), *this->GetName());
+	if (!ensure(PlayerInputComponent)) {
+		UE_LOG(LogTemp, Error, TEXT("[BT][%s] NoPlayerInputComponent"), *this->GetName());
 		return;}
 
 
@@ -70,22 +71,31 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	return DamageToApply;
 }
 
-void ATank::StabilizeTurretYaw() {
+void ATank::StabilizeTurretYaw(float Throw) {
 
 	// // Zeroing Turret rotation casued by tank rotation
 	auto Turret = TankAimingComponent->GetTurret();
-	if (Turret)
+	if (!ensure(Turret)) { UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] TankAimingComponent has not Turret assigned !"), *this->GetName()); return;}
+	if (Throw != 0)
 	{
-		FRotator CurrentTurretRotation = Turret->RelativeRotation;
-		FRotator TankRotation = this->GetActorRotation();
-		//	UE_LOG(LogTemp, Warning, TEXT("[%s] Relative toation: [%f]"), *this->GetName(), CurrentRotation.Yaw);
-
-		FRotator InverseTurretRotation = FRotator((CurrentTurretRotation.Yaw - TankRotation.Yaw ), 0.f, 0.f);
-
-
-		Turret->AddRelativeRotation(InverseTurretRotation);
-
+		float CurrentTurretRotation = Turret->GetComponentRotation().Yaw;
+		float TankRotation = this->GetActorRotation().Yaw;
+		float DeltaTankRotation = TankRotationBeforeInput.Yaw - TankRotation;
+			//UE_LOG(LogTemp, Warning, TEXT("[%s] Relative toation: [%f]"), *this->GetName(), CurrentRotation.Yaw);
+	
+		DeltaTankRotation =  FMath::ClampAngle(DeltaTankRotation, -0.5f, 0.5f);
+		FRotator Delta = FRotator(0.f, DeltaTankRotation, 0.f);
+		Turret->bAbsoluteRotation = true;
+		Turret->AddRelativeRotation(Delta.GetNormalized());
+		//UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] DeltaTankRotation is [%f]  and turret COMPONENT [%f] "), *this->GetName(), DeltaTankRotation, CurrentTurretRotation);
+		
 	}
+	else {
+	TankRotationBeforeInput = GetActorRotation();
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("[BT] [%] FPlatformTime::Seconds() [%f]"), *this->GetName(), FPlatformTime::Seconds());
+
 
 }
 

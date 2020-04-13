@@ -35,11 +35,11 @@ public:
 
 	/* 	// Zeroing Turret rotation casued by tank rotation */
 	UFUNCTION()
-	void StabilizeTurretYaw();
+	void StabilizeTurretYaw(float Throw);
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "@@@ Tank")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "@@@ Tank")
 	class UTankAimingComponent* TankAimingComponent;
 
 
@@ -47,7 +47,7 @@ private:
 	// Sets default values for this pawn's properties
 	ATank();
 
-	
+	FRotator TankRotationBeforeInput;
 
 	virtual void BeginPlay() override;
 

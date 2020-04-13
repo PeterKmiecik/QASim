@@ -41,7 +41,8 @@
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("[%s] failed IsValidLowLevel (button)"),* this->GetName());
+				// TODO - this error is actually appearing, commented for clarity: 04.2020 
+				//UE_LOG(LogTemp, Warning, TEXT("[%s] failed IsValidLowLevel (button)"),* this->GetName());
 			}
 		}
 		

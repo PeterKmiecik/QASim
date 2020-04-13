@@ -39,21 +39,14 @@ void USHMUP_BulletHell_PrimitiveComp::BeginPlay()
 		return;
 	}
 #endif // QA_TESTING_CODE
-
-
-
-
 }
 
 
 void USHMUP_BulletHell_PrimitiveComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	
 	FindSocketsSM();
-
-
 }
 
 void USHMUP_BulletHell_PrimitiveComp::OnRegister() {
@@ -78,8 +71,7 @@ TArray<FVector> USHMUP_BulletHell_PrimitiveComp::FindSocketsSM()
 					 FVector FoundSocketLocation = GetSocketLocation(Name);
 					 
 					 auto Transform = GetSocketTransform(Name, RTS_Actor);
-					 UE_LOG(LogTemp, Warning, TEXT("[%s]"), *Transform.GetLocation().ToString());
-
+					 
 
 					 FoundParentSockets.Add(FoundSocketLocation);
 					// UE_LOG(LogTemp, Warning, TEXT("[%s]"), *Name.ToString());
