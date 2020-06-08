@@ -1,9 +1,12 @@
 // Copyright EmbraceIT Ltd.
 #include "TankMovementComponent.h"
+#include "BPFL_Global.h"
+/*  */
 #include "BattleTank.h"
 #include "TankTrack.h"
 #include "GameFramework/PlayerController.h"
 #include "Tank.h"
+
 
 void UTankMovementComponent::Initialise(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet)
 {
@@ -25,6 +28,7 @@ void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool
 	// // turning tank 
 	auto RightThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;
 	IntendTurnRight(RightThrow);
+
 }
 
 void UTankMovementComponent::IntendMoveForward(float Throw)

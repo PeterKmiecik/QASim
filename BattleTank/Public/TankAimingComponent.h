@@ -12,7 +12,8 @@ enum class EFiringState : uint8
 	Reloading,
 	Aiming,
 	Locked,
-	OutOfAmmo
+	OutOfAmmo,
+	Firing
 };
 
 
@@ -46,10 +47,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
 	UTankTurret* GetTurret() { return Turret; };
 
+	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	EFiringState GetTankFiringState() { return FiringState; };
+	
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "@@@ TankAimingComponent")
 	EFiringState FiringState = EFiringState::Reloading;
-
 private:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
@@ -83,5 +86,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent - DEBUG")
 		bool bShowAimingTargetTraceLine = false;
+
+	bool bHasFired;
 
 };

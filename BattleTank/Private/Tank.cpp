@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Tank.h"
+/*  */
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
 #include "Components/InputComponent.h"
@@ -19,15 +20,16 @@ ATank::ATank()
 void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (!ensure(PlayerInputComponent)) {
-		UE_LOG(LogTemp, Error, TEXT("[BT][%s] NoPlayerInputComponent"), *this->GetName());
-		return;}
+	if (!ensure(PlayerInputComponent)) {UE_LOG(LogTemp, Error, TEXT("[BT][%s] NoPlayerInputComponent"), *this->GetName()); return;}
 
 
 	PlayerInputComponent->BindAxis("MouseX", this, &ATank::Turn);
 	PlayerInputComponent->BindAxis("MouseY", this, &ATank::LookUp);
 
 }
+
+
+
 
 void ATank::BeginPlay()
 {

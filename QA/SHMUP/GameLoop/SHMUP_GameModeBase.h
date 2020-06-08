@@ -24,6 +24,6 @@ private:
 	void OnShipDeath();
 
 	UPROPERTY(EditDefaultsOnly, Category = "@@@@@ SHMUP GameModeBase")
-		TSubclassOf<class ASHMUP_BasePawn> BasePawn;
+	TSubclassOf<class ASHMUP_BasePawn> BaseDefaultPawn;
 
 };

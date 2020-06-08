@@ -1,16 +1,49 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "TankAIController.h"
-
+#include "VisualLogger/VisualLogger.h"
+#include "BPFL_Global.h"
+/* */
 #include "BattleTank.h"
 #include "TankAimingComponent.h"
-#include "Tank.h" // So we can impliment OnDeath
-
+#include "Tank.h" 
+#include "NavigationSystem.h"
+#include "Engine/Engine.h" 
 // Depends on movement component via pathfinding system
+
+ATankAIController::ATankAIController(){
+
+}
 
 void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateNavDataRef();
 }
+
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
+	auto ControlledTank = GetPawn();
+
+	if (!ensure(PlayerTank && ControlledTank)) { UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] PlayerTank or ControlledTank reference "), *this->GetName()); return; }
+
+	// Aim towards the player
+	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
+	AimingComponent->AimAt(PlayerTank->GetActorLocation());
+
+	if (AimingComponent->GetFiringState() == EFiringState::Locked)
+	{
+		AimingComponent->Fire();
+	}
+}
+
+//----------------------------------------------------------------------//
+// INITIALIZATION
+//----------------------------------------------------------------------//
+
 
 void ATankAIController::SetPawn(APawn* InPawn)
 {
@@ -25,31 +58,48 @@ void ATankAIController::SetPawn(APawn* InPawn)
 	}
 }
 
+void ATankAIController::UpdateNavDataRef()
+{
+	ANavigationData* NavDataLocal = nullptr;
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (NavSystem)
+	{
+		 NavDataLocal = NavSystem->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
+		 if (!ensure(NavSystem && NavDataLocal)) { UE_LOG(LogTemp, Warning, TEXT("[BT] [%s]  Can't find NavMesh (UNavigationSystemV1) on the map, or NavMeshData returns nullptr: UpdateNavDataRef() "), *this->GetName()); return; }
+	}
+	NavData = NavDataLocal;
+
+}
+
 void ATankAIController::OnPossedTankDeath()
 {
-	if (!ensure(GetPawn())) { return; } // TODO remove if ok
+	if (!ensure(GetPawn())) { return; }
 	GetPawn()->DetachFromControllerPendingDestroy();
 }
 
-// Called every frame
-void ATankAIController::Tick(float DeltaTime)
+//----------------------------------------------------------------------//
+// VISUAL LOGGING
+//----------------------------------------------------------------------//
+#if ENABLE_VISUAL_LOG
+void ATankAIController::GrabDebugSnapshot(FVisualLogEntry* Snapshot) const
 {
-	Super::Tick(DeltaTime);
+	Super::GrabDebugSnapshot(Snapshot);
+	const int32 CatIndex = Snapshot->Status.AddZeroed();
+	FVisualLogStatusCategory& PlaceableCategory = Snapshot->Status[CatIndex];
 
-	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
-	auto ControlledTank = GetPawn();
-
-	if (!(PlayerTank && ControlledTank)) { return; }
-	
-	// Move towards the player
-	MoveToActor(PlayerTank, AcceptanceRadius); // TODO check radius is in cm
-
-	// Aim towards the player
-	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
-	AimingComponent->AimAt(PlayerTank->GetActorLocation());
-
-	if (AimingComponent->GetFiringState() == EFiringState::Locked)
+	FVisualLogger& Vlog = FVisualLogger::Get();
+	if (Vlog.IsRecording())
 	{
-		AimingComponent->Fire(); // TODO limit firing rate
+		auto Tank = Cast<UTankAimingComponent>(GetPawn()->GetComponentByClass(UTankAimingComponent::StaticClass()));
+		if (!ensure(Tank))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] has Tank pointer empty "), *this->GetName());
+			return;
+		}
+
+		PlaceableCategory.Category = TEXT("TankFired");
+		PlaceableCategory.Add(TEXT("TankFired"), Tank->GetFiringState()==EFiringState::Firing ? TEXT("FIRED") : TEXT("NOT"));
+
 	}
 }
+#endif

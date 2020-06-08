@@ -16,6 +16,11 @@ DECLARE_LOG_CATEGORY_EXTERN(LogSHMUP, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogBT, Log, All);
 
 
+/* // VisualLogger */
+
+DEFINE_LOG_CATEGORY_STATIC(LogVL, Log, All);
+
+
 UCLASS(Blueprintable)
 class QA_API UBPFL_Global : public UBlueprintFunctionLibrary
 {

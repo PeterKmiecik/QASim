@@ -12,10 +12,10 @@
 void ASHMUP_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	auto BasePawn = Cast<ASHMUP_BasePawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ASHMUP_BasePawn* BaseDefaultPawn = Cast<ASHMUP_BasePawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	 
-	if (!ensure(BasePawn)) {UE_LOG(LogTemp, Warning, TEXT("@@@@@ [%s]Default pawn empty"), *this->GetName());	return;}
-	BasePawn->ShipHasDied.AddUniqueDynamic(this, &ASHMUP_GameModeBase::OnShipDeath);
+	if (!ensure(BaseDefaultPawn)) {UE_LOG(LogTemp, Warning, TEXT("@@@@@ [%s]Default pawn empty"), *this->GetName());	return;}
+	BaseDefaultPawn->ShipHasDied.AddUniqueDynamic(this, &ASHMUP_GameModeBase::OnShipDeath);
 }
 	
 void ASHMUP_GameModeBase::OnShipDeath() {
