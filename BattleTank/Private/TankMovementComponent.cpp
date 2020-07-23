@@ -1,17 +1,24 @@
-// Copyright EmbraceIT Ltd.
 #include "TankMovementComponent.h"
-#include "BPFL_Global.h"
-/*  */
 #include "BattleTank.h"
-#include "TankTrack.h"
+
 #include "GameFramework/PlayerController.h"
+
+#include "BPFL_Global.h"
+
+#include "TankTrack.h"
 #include "Tank.h"
 
 
-void UTankMovementComponent::Initialise(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet)
+void UTankMovementComponent::Init(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet)
 {
+	CacheOwningTank();
+
 	LeftTrack = LeftTrackToSet;
 	RightTrack = RightTrackToSet;
+	if (!LeftTrack && RightTrack)
+	{
+		UE_LOG(XXXXX_Log_BT, Warning, TEXT("[BT] [%s] has no TankTracks!"), *this->GetName());
+	}
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)
@@ -23,27 +30,84 @@ void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool
 	auto AIForwardIntention = MoveVelocity.GetSafeNormal();
 
 	auto ForwardThrow = FVector::DotProduct(TankForward, AIForwardIntention);
-	IntendMoveForward(ForwardThrow);
+	bool bIsMovingForward = false;
+	float OutThrow;
+	IntendMoveForward(ForwardThrow, OutThrow);
 
 	// // turning tank 
+	bool bIsTurning = false;
 	auto RightThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;
-	IntendTurnRight(RightThrow);
-
+	IntendTurnRight(RightThrow, bIsTurning);
 }
 
-void UTankMovementComponent::IntendMoveForward(float Throw)
+void UTankMovementComponent::CacheOwningTank()
 {
-	if (!ensure(LeftTrack && RightTrack)) { return; }
-	LeftTrack->SetThrottle(Throw);
-	RightTrack->SetThrottle(Throw);
+	auto LocalTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (LocalTank)
+	{
+		OwningTank = LocalTank;
+	}
 }
 
-void UTankMovementComponent::IntendTurnRight(float Throw)
+bool UTankMovementComponent::IntendMoveForward(float Throw, float& OutThrow)
 {
+	bool bIsMoving = false;
+	if (!ensure(LeftTrack && RightTrack)) { return false; }
+	if (Throw != 0.f)
+	{
+		//!= 0.f
+		bIsMoving = true;
+		bDrivingForwardBackward = true;
+		OutThrow = Throw;
+		LeftTrack->SetThrottle(Throw, bIsMoving);
+		RightTrack->SetThrottle(Throw, bIsMoving);
+		GetOwningTank()->EnginePitchHandler();
+		return bIsMoving;
+	}
+	else
+	{
+		bIsMoving = false;
+		StopMovementImmediately();
+		bDrivingForwardBackward = false;
 
-	if (!ensure(LeftTrack && RightTrack)) { return; }
-	LeftTrack->SetThrottle(Throw);
-	RightTrack->SetThrottle(-Throw);
-	auto Tank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	Tank->StabilizeTurretYaw(Throw);
+	}
+	OutThrow = Throw;
+	return bIsMoving;
+}
+
+float UTankMovementComponent::IntendTurnRight(float Throw, bool& bIsMoving)
+{
+	if (!ensure(LeftTrack && RightTrack)) { return NULL; }
+	if (Throw != 0)
+	{
+		if (bDrivingForwardBackward)
+		{
+			LeftTrack->SetThrottle(Throw * 0.5f, bIsMoving);
+			RightTrack->SetThrottle(-Throw * 0.5f, bIsMoving);
+		}
+		else
+		{
+			LeftTrack->SetThrottle(Throw * 0.8f, bIsMoving);
+			RightTrack->SetThrottle(-Throw * 0.8f, bIsMoving);
+		}
+		bIsMoving = true;
+		GetOwningTank()->StabilizeTurretYaw(Throw);
+		GetOwningTank()->EnginePitchHandler();
+	}
+	else
+	{
+		bIsMoving = false;
+	}
+	return Throw;
+}
+
+TArray<UTankTrack*> UTankMovementComponent::GetTankTracks()
+{
+	TArray<UTankTrack*> ArrayOfTracks;
+	if (LeftTrack && RightTrack)
+	{
+		ArrayOfTracks.Add(LeftTrack);
+		ArrayOfTracks.Add(RightTrack);
+	}
+	return ArrayOfTracks;
 }

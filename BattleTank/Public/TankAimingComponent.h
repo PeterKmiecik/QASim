@@ -1,5 +1,3 @@
-// Copyright EmbraceIT Ltd.
-
 #pragma once
 
 #include "Components/ActorComponent.h"
@@ -16,8 +14,6 @@ enum class EFiringState : uint8
 	Firing
 };
 
-
-// Forward Declaration
 class UTankBarrel;
 class UTankTurret;
 class AProjectile;
@@ -29,32 +25,31 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	void Initialise(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 	
 	void AimAt(FVector HitLocation);
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	void Fire();
 
 	EFiringState GetFiringState() const;
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	int32 GetRoundsLeft() const;
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	UTankBarrel* GetBarrel() { return Barrel; };
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	UTankTurret* GetTurret() { return Turret; };
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankAimingComponent")
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
 	EFiringState GetTankFiringState() { return FiringState; };
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "@@@ TankAimingComponent")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "@@@ BT|TankAimingComponent")
 	EFiringState FiringState = EFiringState::Reloading;
 private:
-	// Sets default values for this component's properties
 	UTankAimingComponent();
 
 	virtual void BeginPlay() override;
@@ -68,23 +63,23 @@ private:
 	UTankBarrel* Barrel = nullptr;
 	UTankTurret* Turret = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
 	float LaunchSpeed = 4000;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
 	float ReloadTimeInSeconds = 3;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
 	int32 RoundsLeft = 3;
 
 	double LastFireTime = 0;
 
 	FVector AimDirection;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAimingComponent - DEBUG")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
 		bool bShowAimingTargetTraceLine = false;
 
 	bool bHasFired;

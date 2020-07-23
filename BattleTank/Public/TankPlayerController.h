@@ -1,5 +1,3 @@
-// Copyright EmbraceIT Ltd.
-
 #pragma once
 
 #include "GameFramework/PlayerController.h"
@@ -19,7 +17,7 @@ public:
 	ATankPlayerController();
 
 protected:
-	UFUNCTION(BlueprintImplementableEvent, Category = "@@@ Tank Player Controller")
+	UFUNCTION(BlueprintImplementableEvent, Category = "@@@ BT|PlayerController")
 	void FoundAimingComponent(UTankAimingComponent* AimCompRef);
 
 	UFUNCTION()
@@ -28,7 +26,7 @@ protected:
 
 	/* WIDGETS -------------------------  */
 
-	UPROPERTY(BlueprintReadOnly, Category = "@@@ Tank Player Controller")
+	UPROPERTY(BlueprintReadOnly, Category = "@@@ BT|PlayerController")
 	class UBT_UserWidget* PlayerUI;
 
 	UPROPERTY()
@@ -51,13 +49,13 @@ private:
 	// Return an OUT parameter, true if hit landscape
 	bool GetSightRayHitLocation(FVector& HitLocation) const;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ Tank Player Controller")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|PlayerController")
 	float CrosshairXLocation = 0.5;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ Tank Player Controller")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|PlayerController")
 	float CrosshairYLocation = 0.3333;
 
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ Tank Player Controller")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|PlayerController")
 	float LineTraceRange = 1000000;
 
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;

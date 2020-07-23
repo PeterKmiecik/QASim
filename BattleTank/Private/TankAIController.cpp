@@ -1,15 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "TankAIController.h"
-#include "VisualLogger/VisualLogger.h"
-#include "BPFL_Global.h"
-/* */
 #include "BattleTank.h"
-#include "TankAimingComponent.h"
-#include "Tank.h" 
+
+#include "BPFL_Global.h"
+
+#include "VisualLogger/VisualLogger.h"
 #include "NavigationSystem.h"
 #include "Engine/Engine.h" 
-// Depends on movement component via pathfinding system
 
+#include "TankAimingComponent.h"
+#include "Tank.h" 
+
+// Depends on movement component via pathfinding system
 ATankAIController::ATankAIController(){
 
 }
@@ -28,7 +30,7 @@ void ATankAIController::Tick(float DeltaTime)
 	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
 	auto ControlledTank = GetPawn();
 
-	if (!ensure(PlayerTank && ControlledTank)) { UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] PlayerTank or ControlledTank reference "), *this->GetName()); return; }
+	if (!ensure(PlayerTank && ControlledTank)) { UE_LOG(XXXXX_Log_BT, Warning, TEXT("[BT] [%s] PlayerTank or ControlledTank reference "), *this->GetName()); return; }
 
 	// Aim towards the player
 	auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
@@ -65,7 +67,7 @@ void ATankAIController::UpdateNavDataRef()
 	if (NavSystem)
 	{
 		 NavDataLocal = NavSystem->GetDefaultNavDataInstance(FNavigationSystem::DontCreate);
-		 if (!ensure(NavSystem && NavDataLocal)) { UE_LOG(LogTemp, Warning, TEXT("[BT] [%s]  Can't find NavMesh (UNavigationSystemV1) on the map, or NavMeshData returns nullptr: UpdateNavDataRef() "), *this->GetName()); return; }
+		 if (!ensure(NavSystem && NavDataLocal)) { UE_LOG(XXXXX_Log_BT, Warning, TEXT("[BT] [%s]  Can't find NavMesh (UNavigationSystemV1) on the map, or NavMeshData returns nullptr: UpdateNavDataRef() "), *this->GetName()); return; }
 	}
 	NavData = NavDataLocal;
 
@@ -93,7 +95,7 @@ void ATankAIController::GrabDebugSnapshot(FVisualLogEntry* Snapshot) const
 		auto Tank = Cast<UTankAimingComponent>(GetPawn()->GetComponentByClass(UTankAimingComponent::StaticClass()));
 		if (!ensure(Tank))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[BT] [%s] has Tank pointer empty "), *this->GetName());
+			UE_LOG(XXXXX_Log_BT, Warning, TEXT("[BT] [%s] has Tank pointer empty "), *this->GetName());
 			return;
 		}
 

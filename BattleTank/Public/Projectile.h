@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "GameFramework/Actor.h"
@@ -12,10 +10,7 @@ class BATTLETANK_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AProjectile();
-
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	void LaunchProjectile(float Speed);
@@ -26,23 +21,23 @@ private:
 
 	void OnTimerExpire();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|Projectile")
 	float DestroyDelay = 10.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|Projectile")
 	float ProjectileDamage = 20.f;
 
 	class UProjectileMovementComponent* ProjectileMovement = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Projectile")
 	UStaticMeshComponent* CollisionMesh = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Projectile")
 	class UParticleSystemComponent* LaunchBlast = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Projectile")
 	UParticleSystemComponent* ImpactBlast = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Projectile")
 	class URadialForceComponent* ExplosionForce = nullptr;
 };

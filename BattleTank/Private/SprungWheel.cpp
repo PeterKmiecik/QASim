@@ -1,19 +1,16 @@
-// Copyright EmbraceIT Ltd.
 #include "SprungWheel.h"
 
 #include "BattleTank.h"
+
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
 ASprungWheel::ASprungWheel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PostPhysics;
 
-	MassWheelConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("MassWheelConstraint"));
-	SetRootComponent(MassWheelConstraint);
+	RootComponent = MassWheelConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("MassWheelConstraint"));
 
 	Axle = CreateDefaultSubobject<USphereComponent>(FName("Axle"));
 	Axle->SetupAttachment(MassWheelConstraint);
@@ -26,13 +23,19 @@ ASprungWheel::ASprungWheel()
 
 }
 
-// Called when the game starts or when spawned
 void ASprungWheel::BeginPlay()
 {
 	Super::BeginPlay();
 
 	Wheel->SetNotifyRigidBodyCollision(true);
 	Wheel->OnComponentHit.AddDynamic(this, &ASprungWheel::OnHit);
+	Wheel->SetLinearDamping(10.f);
+	Wheel->SetAngularDamping(100.f);
+	Wheel->ComponentTags.Add("Wheel_1");
+	Wheel->bVisible = true;
+	Wheel->SetHiddenInGame(false);
+
+	Axle->ShapeColor.Yellow;
 
 	SetupConstraint();
 }
@@ -46,10 +49,15 @@ void ASprungWheel::SetupConstraint()
 	AxleWheelConstraint->SetConstrainedComponents(Axle, NAME_None, Wheel, NAME_None);
 }
 
-// Called every frame
 void ASprungWheel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+#if !UE_BUILD_SHIPPING 	
+
+	CurrentLinearDamping = Wheel->GetLinearDamping();
+
+#endif // #if !UE_BUILD_SHIPPING  - TEMP debug
 
 	if (GetWorld()->TickGroup == TG_PostPhysics)
 	{

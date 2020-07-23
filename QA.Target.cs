@@ -9,6 +9,6 @@ public class QATarget : TargetRules
 	{
 		Type = TargetType.Game;
 
-		ExtraModuleNames.AddRange( new string[] { "QA", "BattleTank" } );
+		ExtraModuleNames.AddRange( new string[] { "QA", "BattleTank", "RPS" } );
 	}
 }

@@ -1,5 +1,3 @@
-// Copyright EmbraceIT Ltd.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,15 +10,12 @@ class BATTLETANK_API ASprungWheel : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASprungWheel();
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void AddDrivingForce(float ForceMagnitude);
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 private:
@@ -31,17 +26,20 @@ private:
 
 	void ApplyForce();
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
 	class USphereComponent* Wheel = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
 	USphereComponent* Axle = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
 	class UPhysicsConstraintComponent* MassWheelConstraint = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
 	UPhysicsConstraintComponent* AxleWheelConstraint = nullptr;
 
 	float TotalForceMagnitudeThisFrame = 0;
+
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
+	float CurrentLinearDamping;
 };

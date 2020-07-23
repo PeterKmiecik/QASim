@@ -1,5 +1,3 @@
-// Copyright EmbraceIT Ltd.
-
 #pragma once
 
 #include "GameFramework/NavMovementComponent.h"
@@ -18,14 +16,22 @@ class BATTLETANK_API UTankMovementComponent : public UNavMovementComponent
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankMovementComponent")
-	void Initialise(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet);
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankMovementComponent")
+	void Init(class UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet);
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankMovementComponent")
-	void IntendMoveForward(float Throw);
+	/* // Called from BP*/
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankMovementComponent")
+	bool IntendMoveForward(float Throw, float& OutThrow);
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ TankMovementComponent")
-	void IntendTurnRight(float Throw);
+	/* // Called from BP*/
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankMovementComponent")
+	float IntendTurnRight(float Throw, bool& bIsMoving);
+	
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankMovementComponent")
+	TArray<UTankTrack*> GetTankTracks();
+
+	UTankTrack* GetLeftTrack() { return LeftTrack; };
+	UTankTrack* GetRightTrack() { return RightTrack; };
 
 private:
 	// Called from the pathfinding logic by the AI controllers
@@ -33,4 +39,11 @@ private:
 
 	UTankTrack* LeftTrack = nullptr;
 	UTankTrack* RightTrack = nullptr;
+
+	class  ATank* GetOwningTank() { return OwningTank; };
+	
+	void CacheOwningTank();
+	ATank* OwningTank;
+
+	bool bDrivingForwardBackward = false;
 };

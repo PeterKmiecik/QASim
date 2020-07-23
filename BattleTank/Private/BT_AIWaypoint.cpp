@@ -2,8 +2,10 @@
 
 
 #include "BT_AIWaypoint.h"
-#include "Components/BillboardComponent.h"
+
 #include "UObject/ConstructorHelpers.h"
+
+#include "Components/BillboardComponent.h"
 
 
 // Sets default values

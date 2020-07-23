@@ -1,9 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #include "TankPlayerController.h"
+#include "BattleTank.h"
+
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
-#include "BattleTank.h"
+
 #include "TankAimingComponent.h"
+
 #include "Tank.h"
 #include "BT_UserWidget.h"
 
@@ -35,7 +37,7 @@ void ATankPlayerController::BeginPlay()
 	Super::BeginPlay();
 	if (!GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[%s] no pawn found"), *this->GetName());
+		UE_LOG(XXXXX_Log_BT, Warning, TEXT("[%s] no pawn found"), *this->GetName());
 		return;
 	}
 
@@ -53,7 +55,7 @@ void ATankPlayerController::BeginPlay()
 			SetInputMode(FInputModeGameOnly());
 		}
 	}
-	else { UE_LOG(LogTemp, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
+	else { UE_LOG(XXXXX_Log_BT, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
 
 	// WIDGETS ------------ //
 }
@@ -63,8 +65,6 @@ void ATankPlayerController::Tick(float DeltaTime)
 	Super::Tick( DeltaTime );
 	AimTowardsCrosshair();
 }
-
-
 
 /* AIMING -----------------  ---------------- */
 void ATankPlayerController::AimTowardsCrosshair()
@@ -81,7 +81,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	}
 }
 
-// Get world location of linetrace through crosshair, true if hits landscape
+// //Get world location of linetrace through crosshair, true if hits landscape
 bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
 	// Find the crosshair position in pixel coordinates

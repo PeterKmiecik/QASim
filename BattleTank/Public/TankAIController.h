@@ -1,13 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "AIController.h"
 #include "TankAIController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
 {
@@ -17,12 +12,12 @@ public:
 	ATankAIController();
 
 	/* // Current instance of nav mesh data active in world */
-	UPROPERTY(BlueprintReadOnly, Category = "@@@ TankAIController")
+	UPROPERTY(BlueprintReadOnly, Category = "@@@ BT|TankAIController")
 	ANavigationData* NavData;
 
 protected:
 	// How close can the AI tank get
-	UPROPERTY(EditDefaultsOnly, Category = "@@@ TankAIController")
+	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAIController")
 	float AcceptanceRadius = 8000;
 
 private:
