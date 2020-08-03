@@ -56,6 +56,7 @@ void ASprungWheel::Tick(float DeltaTime)
 #if !UE_BUILD_SHIPPING 	
 
 	CurrentLinearDamping = Wheel->GetLinearDamping();
+	CurrentAngularDamping = Wheel->GetAngularDamping();
 
 #endif // #if !UE_BUILD_SHIPPING  - TEMP debug
 

@@ -9,6 +9,6 @@ public class QAEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "QA", "BattleTank", "RPS" } );
+		ExtraModuleNames.AddRange( new string[] { "QA", "BattleTank", "RPS", "QG" } );
 	}
 }

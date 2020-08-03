@@ -4,8 +4,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "TankTrack.generated.h"
 
-/**
- * TankTrack is used to set maximum driving force, and to apply forces to the tank.
+
+
+/** * TankTrack is used to set maximum driving force, and to apply forces to the tank.
  */
 UCLASS(meta = (BlueprintSpawnableComponent))
 class BATTLETANK_API UTankTrack : public UStaticMeshComponent
@@ -13,9 +14,10 @@ class BATTLETANK_API UTankTrack : public UStaticMeshComponent
 	GENERATED_BODY()
 	
 public:
+
 	/* // Sets a throttle between -1 and +1 */
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankTrack")
-	void SetThrottle(float Throttle, bool IsMoving);
+	void SetThrottle(float Throttle);
 	
 	/* // Max force per track, in Newtons */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -65,11 +67,13 @@ protected:
 
 	virtual void BeginPlay();
 private:
+
+
 	UTankTrack();
 
 	TArray<class USphereComponent*> GetWheelComps();
 
-	void DriveTrack(float CurrentThrottle);
+	void DriveTrack(float InCurrentThrottle);
 
 	class ATank* CacheTankRef();
 	ATank* Tank;
@@ -78,9 +82,7 @@ private:
 
 	float OffsetL = 0.f;
 
-	float ThrottleSize =  0.f;
+	float ThrottleSize = 0.f;
 
 	float CurrentThrottle = 0.f;
-	
-
 };

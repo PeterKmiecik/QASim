@@ -42,4 +42,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
 	float CurrentLinearDamping;
+
+	UPROPERTY(VisibleAnywhere, Category = "@@@ BT|Tank|SprungWheel")
+	float CurrentAngularDamping;
+
 };

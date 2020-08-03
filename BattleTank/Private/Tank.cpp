@@ -15,7 +15,7 @@
 
 ATank::ATank()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(TEXT("TankAimingComponent"));
 	TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(TEXT("TankMovementComponent"));
@@ -30,27 +30,37 @@ void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MouseX", this, &ATank::Turn);
 	PlayerInputComponent->BindAxis("MouseY", this, &ATank::LookUp);
+	PlayerInputComponent->BindAxis("w", this, &ATank::DriveForwardBackward);
+	PlayerInputComponent->BindAxis("D", this, &ATank::TurnRightLeft);
 }
 
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
-
 	Init();
 }
 
-void ATank::Init()
+void ATank::Tick(float DeltaTime)
 {
-	CurrentHealth = StartingHealth;
-	if (EngineSound)
-	{
-		SetupEngineSounds(EngineSound);
-	} else { UE_LOG(XXXXX_Log_BT, Warning, TEXT("@@@@@ [%s] has no EngineSound set in BPs defaults"), *this->GetName()); }
+	Super::Tick(DeltaTime);
+	TankInput.Sanitize();
 }
 
-float ATank::GetHealthPercent() const
+void FTankInput::Sanitize()
 {
-	return (float)CurrentHealth / (float)StartingHealth;
+	MovementInput = RawMovementInput.ClampAxes(-1.0f, 1.0f);
+	MovementInput.GetSafeNormal();
+	RawMovementInput.Set(0.0f, 0.0f);
+}
+
+void FTankInput::MoveX(float AxisValue)
+{
+	RawMovementInput.X += AxisValue;
+}
+
+void FTankInput::MoveY(float AxisValue)
+{
+	RawMovementInput.Y += AxisValue;
 }
 
 void ATank::LookUp(float Value)
@@ -67,6 +77,51 @@ void ATank::Turn(float Value)
 	{
 		AddControllerYawInput(Value);
 	}
+}
+
+void ATank::DriveForwardBackward(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bDrivngForward = true;
+		TankInput.MoveX(Value);
+		OnDrivingForward.Broadcast(TankMovementComponent->IntendMoveForward(TankInput.MovementInput.X));
+	}
+	else
+	{
+		bDrivngForward = false;
+		OnFwdBckwrdMovementStop();
+	}
+}
+
+void ATank::TurnRightLeft(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bTurning = true;
+		TankInput.MoveY(Value);
+		OnDrivingSide.Broadcast(TankMovementComponent->IntendTurnRight(TankInput.MovementInput.Y));
+	}
+	else
+	{
+		bTurning = false;
+		OnLeftRightStop();
+	}
+}
+
+void ATank::Init()
+{
+	CurrentHealth = StartingHealth;
+	if (EngineSound)
+	{
+		SetupEngineSounds(EngineSound);
+	}
+	else { UE_LOG(XXXXX_Log_BT, Warning, TEXT("@@@@@ [%s] has no EngineSound set in BPs defaults"), *this->GetName()); }
+}
+
+float ATank::GetHealthPercent() const
+{
+	return (float)CurrentHealth / (float)StartingHealth;
 }
 
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser)
@@ -122,7 +177,7 @@ void ATank::EnginePitchHandler()
 	UTankTrack* RightTrack = TankMovementComponent->GetRightTrack();
 
 	float IncomingDrivingDirection = LeftTrack->GetPositionOffset(LeftTrack->GetCurrentThrottle());
-	//UE_LOG(XXXXX_Log_BT, Log, TEXT("[BT] [%s] TrackOffset [%f] !"), *this->GetName(), LeftTrack->GetPositionOffset(LeftTrack->GetCurrentThrottle()));
+	UE_LOG(XXXXX_Log_BT, Log, TEXT("[BT] [%s] TrackOffset [%f] !"), *this->GetName(), LeftTrack->GetPositionOffset(LeftTrack->GetCurrentThrottle()));
 
 	// if we are turning
 	if ((LeftTrack->GetCurrentThrottle() > 0.f) && (RightTrack->GetCurrentThrottle() < 0.f))
@@ -134,8 +189,6 @@ void ATank::EnginePitchHandler()
 	{
 		NewPitch = UKismetMathLibrary::MapRangeClamped(IncomingDrivingDirection, -0.002f, 0.002f, LowEnginePitch, HighEnginePitch);
 	}
-	//UE_LOG(XXXXX_Log_BT, Log, TEXT("[BT] [%s] SoundPitchMultipier [%f] !"), *this->GetName(), NewPitch)
+	UE_LOG(XXXXX_Log_BT, Log, TEXT("[BT] [%s] SoundPitchMultipier [%f] !"), *this->GetName(), NewPitch)
 	TankEngineAudioComp->SetPitchMultiplier(NewPitch);
 }
-
-

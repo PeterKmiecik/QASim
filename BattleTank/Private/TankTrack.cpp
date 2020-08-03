@@ -82,8 +82,8 @@ void UTankTrack::ToggleMovement(bool OnOrOff, float SlowAlpha) {
 	{
 		bTrackMoves = true;
 		RootTankSM->WakeRigidBody();
-		RootTankSM->SetLinearDamping(0.f);
-		RootTankSM->SetAngularDamping(0.f);
+		RootTankSM->SetLinearDamping(Tank->GetTankLinearDampingDriving());
+		RootTankSM->SetAngularDamping(Tank->GetTankAngularDampingDriving());
 
 		for (USphereComponent* SpawnedWheelComp : WheelSphereComponents)
 		{
@@ -91,8 +91,8 @@ void UTankTrack::ToggleMovement(bool OnOrOff, float SlowAlpha) {
 			{
 				SpawnedWheelComp->WakeRigidBody();
 				SpawnedWheelComp->ShapeColor.Blue;
-				SpawnedWheelComp->SetLinearDamping(10.f);
-				SpawnedWheelComp->SetAngularDamping(1000.f);
+				SpawnedWheelComp->SetLinearDamping(Tank->GetWheelLinearDampingDriving());
+				SpawnedWheelComp->SetAngularDamping(Tank->GetWheelAngularDampingDriving());
 			}
 		}
 	}
@@ -104,26 +104,23 @@ void UTankTrack::ToggleMovement(bool OnOrOff, float SlowAlpha) {
 			//SpawnedWheelComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector, false);
 			//SpawnedWheelComp->SetPhysicsLinearVelocity(FVector::ZeroVector, false);
 
-			SpawnedWheelComp->SetLinearDamping(FMath::Lerp(10.f, Tank->GetWheelAngularDampingToStop(), SlowAlpha));
-			SpawnedWheelComp->SetAngularDamping(FMath::Lerp(10.f, Tank->GetWheelAngularDampingToStop(), SlowAlpha));
+			SpawnedWheelComp->SetLinearDamping(FMath::Lerp(Tank->GetWheelLinearDampingDriving(), Tank->GetWheelLinearDampingToStop(), SlowAlpha));
+			SpawnedWheelComp->SetAngularDamping(FMath::Lerp(Tank->GetWheelAngularDampingDriving(), Tank->GetWheelAngularDampingToStop(), SlowAlpha));
 
 			SpawnedWheelComp->ShapeColor.Green;
 			SpawnedWheelComp->ShapeColor.MakeRandomColor();
-			//SpawnedWheelComp->PutRigidBodyToSleep();
 		}
-		RootTankSM->SetAngularDamping(FMath::Lerp(0.f, Tank->GetTankAngularDampingToStop(), SlowAlpha));
-		RootTankSM->SetLinearDamping(FMath::Lerp(0.f, Tank->GetTankLinearDampingToStop(), SlowAlpha));
-		//RootTankSM->PutRigidBodyToSleep();
+		RootTankSM->SetAngularDamping(FMath::Lerp(Tank->GetTankAngularDampingDriving(), Tank->GetTankAngularDampingToStop(), SlowAlpha));
+		RootTankSM->SetLinearDamping(FMath::Lerp(Tank->GetTankLinearDampingDriving(), Tank->GetTankLinearDampingToStop(), SlowAlpha));
 	}
 }
 
-void UTankTrack::SetThrottle(float Throttle, bool IsMoving)
+void UTankTrack::SetThrottle(float Throttle)
 {
-	CurrentThrottle = FMath::Clamp<float>(Throttle, -1, 1);
-	DriveTrack(CurrentThrottle);
+	DriveTrack(Throttle);
 }
 
-void UTankTrack::DriveTrack(float CurrentThrottle)
+void UTankTrack::DriveTrack(float InCurrentThrottle)
 {
 	auto ForceApplied = CurrentThrottle * TrackMaxDrivingForce;
 	auto ForcePerWheel = ForceApplied / SprungWheels.Num();
