@@ -2,6 +2,8 @@
 #include "Projectile.h"
 #include "BattleTank.h"
 
+#include "Interfaces/BT_DamageInterface.h"
+
 #include "Kismet/GameplayStatics.h"
 
 #include "Particles/ParticleSystemComponent.h"
@@ -53,11 +55,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	SetRootComponent(ImpactBlast);
 	CollisionMesh->DestroyComponent();
 
+	// IBT_DamageInterface implementation.
+	// if Hit.Actor (which is TWealObjectPtr so we have to call .Get()) doesnt implement interface, skips this
+	if (IBT_DamageInterface* DamageActor = Cast<IBT_DamageInterface>(Hit.Actor.Get()))
+	{
+		DamageActor->ReceiveDamage(ProjectileDamage);
+	}
+
 	UGameplayStatics::ApplyRadialDamage(
 		this,
 		ProjectileDamage,
 		GetActorLocation(),
-		ExplosionForce->Radius, // for consistancy
+		ExplosionForce->Radius, // for consistency
 		UDamageType::StaticClass(),
 		TArray<AActor*>() // damage all actors
 	);

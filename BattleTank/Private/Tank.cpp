@@ -1,17 +1,20 @@
 #include "Tank.h"
 #include "BattleTank.h"
 
+#include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
+#include "TankPlayerController.h"
+#include "TankTurret.h"
+#include "TankTrack.h"
+
 #include "Math/Rotator.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TimerManager.h"
 
 #include "Components/InputComponent.h"
 #include "Components/AudioComponent.h"
 
-#include "TankAimingComponent.h"
-#include "TankMovementComponent.h"
-#include "TankTurret.h"
-#include "TankTrack.h"
 
 ATank::ATank()
 {
@@ -21,6 +24,9 @@ ATank::ATank()
 	TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(TEXT("TankMovementComponent"));
 	AddOwnedComponent(TankMovementComponent);
 	AddOwnedComponent(TankAimingComponent);
+	
+	/* // set Pawn is automatically possessed by an AI Controller whenever it is created */
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
@@ -28,10 +34,15 @@ void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (!ensure(PlayerInputComponent)) {UE_LOG(XXXXX_Log_BT, Error, TEXT("[BT][%s] NoPlayerInputComponent"), *this->GetName()); return;}
 
-	PlayerInputComponent->BindAxis("MouseX", this, &ATank::Turn);
-	PlayerInputComponent->BindAxis("MouseY", this, &ATank::LookUp);
-	PlayerInputComponent->BindAxis("w", this, &ATank::DriveForwardBackward);
-	PlayerInputComponent->BindAxis("D", this, &ATank::TurnRightLeft);
+	PlayerInputComponent->BindAxis("BT_MouseX", this, &ATank::Turn);
+	PlayerInputComponent->BindAxis("BT_MouseY", this, &ATank::LookUp);
+	PlayerInputComponent->BindAxis("BT_ForwardBackward", this, &ATank::DriveForwardBackward);
+	PlayerInputComponent->BindAxis("BT_TurnRightLeft", this, &ATank::TurnRightLeft);
+	PlayerInputComponent->BindAxis("BT_TurnRightLeft", this, &ATank::TurnRightLeft);
+	PlayerInputComponent->BindAction("BT_Fire", EInputEvent::IE_Pressed, this, &ATank::FirePressed);
+	PlayerInputComponent->BindAction("BT_Fire", EInputEvent::IE_Released, this, &ATank::FireReleased);
+
+
 }
 
 void ATank::BeginPlay()
@@ -51,6 +62,7 @@ void FTankInput::Sanitize()
 	MovementInput = RawMovementInput.ClampAxes(-1.0f, 1.0f);
 	MovementInput.GetSafeNormal();
 	RawMovementInput.Set(0.0f, 0.0f);
+
 }
 
 void FTankInput::MoveX(float AxisValue)
@@ -61,6 +73,11 @@ void FTankInput::MoveX(float AxisValue)
 void FTankInput::MoveY(float AxisValue)
 {
 	RawMovementInput.Y += AxisValue;
+}
+
+void FTankInput::Fire(bool bPressed)
+{
+	bFire = bPressed;
 }
 
 void ATank::LookUp(float Value)
@@ -109,6 +126,34 @@ void ATank::TurnRightLeft(float Value)
 	}
 }
 
+void ATank::Fire()
+{
+	TankAimingComponent->Fire();
+	PlayCameraShake(FireCameraShake,1.f);
+}
+
+void ATank::FirePressed()
+{
+	TankInput.Fire(true);
+	Fire();
+}
+
+void ATank::FireReleased()
+{
+	TankInput.Fire(false);
+}
+
+bool ATank::PlayCameraShake(TSubclassOf<UCameraShake> CameraShakeToPlayType, float Scale, ECameraAnimPlaySpace::Type PlaySpace)
+{
+	if (CameraShakeToPlayType)
+	{
+		UGameplayStatics::GetPlayerController(this, 0)->ClientPlayCameraShake(CameraShakeToPlayType, Scale, PlaySpace);
+		return true;
+	}
+	UE_LOG(XXXXX_Log_BT, Error, TEXT("[BT] [%s] CameraShakeToPlayType is not valid. Check BPs default reference is set "), *this->GetName());
+	return false;
+}
+
 void ATank::Init()
 {
 	CurrentHealth = StartingHealth;
@@ -116,11 +161,18 @@ void ATank::Init()
 	{
 		SetupEngineSounds(EngineSound);
 	}
-	else { UE_LOG(XXXXX_Log_BT, Warning, TEXT("@@@@@ [%s] has no EngineSound set in BPs defaults"), *this->GetName()); }
+	else { UE_LOG(XXXXX_Log_BT, Error, TEXT("@@@@@ [%s] has no EngineSound set in BPs defaults"), *this->GetName()); }
+	
+	// Initialise TankPlayerController stuff which depends ond valid Tank
+	if (GetController<ATankPlayerController>())
+	{
+		Cast<ATankPlayerController>(UGameplayStatics::GetPlayerController(this, 0))->PostTankInit(this);
+	}
 }
 
 float ATank::GetHealthPercent() const
 {
+
 	return (float)CurrentHealth / (float)StartingHealth;
 }
 
@@ -133,15 +185,40 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	if (CurrentHealth <= 0)
 	{
 		OnDeath.Broadcast();
+		GetWorldTimerManager().SetTimer(RestartAfterDeathTimer, this, &ATank::RestartLevelWhenPlayerDie, 3.f);
 	}
 	return DamageToApply;
 }
+
+void ATank::RestartLevelWhenPlayerDie()
+{
+	ATankPlayerController* PC = Cast<ATankPlayerController>(GetController());
+	if (PC)
+	{
+		PC->RestartLevel();
+	}
+}
+
+////////////////////  IDamageInterface  //////////////////////
+#pragma region IDamageInterface
+
+void ATank::ReceiveDamage(float IncomingDamage)
+{
+	PlayCameraShake(FireCameraShake, 1.f);
+}
+
+float ATank::GetHealthRemaining()
+{
+	return 0.0f;
+}
+
+#pragma endregion IDamageInterface implementation
 
 void ATank::StabilizeTurretYaw(float Throw) {
 
 	// // Zeroing Turret rotation casued by tank rotation
 	auto Turret = TankAimingComponent->GetTurret();
-	if (!ensure(Turret)) { UE_LOG(XXXXX_Log_BT, Warning, TEXT("[BT] [%s] TankAimingComponent has no Turret assigned !"), *this->GetName()); return;}
+	if (!ensure(Turret)) { UE_LOG(XXXXX_Log_BT, Error, TEXT("[BT] [%s] TankAimingComponent has no Turret assigned !"), *this->GetName()); return;}
 	if (Throw != 0)
 	{
 		float CurrentTurretRotation = Turret->GetComponentRotation().Yaw;

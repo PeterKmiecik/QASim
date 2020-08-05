@@ -80,7 +80,7 @@ private:
 	FVector AimDirection;
 
 	UPROPERTY(EditDefaultsOnly, Category = "@@@ BT|TankAimingComponent")
-		bool bShowAimingTargetTraceLine = false;
+	bool bShowAimingTargetTraceLine = false;
 
 	bool bHasFired;
 

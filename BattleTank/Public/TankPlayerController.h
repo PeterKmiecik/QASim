@@ -4,7 +4,7 @@
 #include "TankPlayerController.generated.h"
 
 class UTankTankAimingComponent;
-
+class ATank;
 /**
  * Responsible for helping the player aim.
  */
@@ -15,32 +15,36 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 
 public:
 	ATankPlayerController();
+	/** // Called from Tank after he was initialized*/
+	void PostTankInit(ATank* InTank);
 
 protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "@@@ BT|PlayerController")
 	void FoundAimingComponent(UTankAimingComponent* AimCompRef);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|PlayerController")
 	void OnPossedTankDeath();
 
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|PlayerController")
+	void Init();
 
-	/* WIDGETS -------------------------  */
+	virtual void CreatePlayerUIWidget();
 
+	/**~ WIDGETS -------------------------  */
 	UPROPERTY(BlueprintReadOnly, Category = "@@@ BT|PlayerController")
 	class UBT_UserWidget* PlayerUI;
 
-	UPROPERTY()
-	TSubclassOf< UBT_UserWidget> wPlayerUI;
-
-	/* WIDGETS -------------------------  */
+	/* // Class to be set for Player tank UI HUD*/
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "@@@ BT|PlayerController")
+	TSubclassOf< UBT_UserWidget> PlayerUIClass;
+	/**~ WIDGETS -------------------------  */
 
 private:
-
-
-
-	void SetPawn(APawn * InPawn);
-	virtual void BeginPlay() override;
-	virtual void Tick( float DeltaTime ) override;
+	ATank* ControlledTank;
+	ATank* SetControlledTank(ATank* Tank);
 
 	// Start the tank moving the barrel so that a shot would hit where
 	// the crosshair intersects the world
@@ -61,3 +65,5 @@ private:
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
 	bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
 };
+
+

@@ -52,6 +52,8 @@ void AFirstPersonCharacter::Tick(float DeltaTime)
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (!ensure(PlayerInputComponent)) { UE_LOG(XXXXX_Log_QG, Error, TEXT("[BT][%s] NoPlayerInputComponent"), *this->GetName()); return; }
+
 	PlayerInputComponent->BindAxis(TEXT("QG_Forward"), this, &AFirstPersonCharacter::Forward);
 	PlayerInputComponent->BindAxis(TEXT("QG_Right"), this, &AFirstPersonCharacter::Right);
 	PlayerInputComponent->BindAxis(TEXT("QG_LookUp"), this, &APawn::AddControllerPitchInput);

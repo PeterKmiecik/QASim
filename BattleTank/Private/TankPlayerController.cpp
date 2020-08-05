@@ -11,53 +11,66 @@
 
 ATankPlayerController::ATankPlayerController()
 {
-
-}
-
-void ATankPlayerController::SetPawn(APawn* InPawn)
-{
-	Super::SetPawn(InPawn);
-	if (InPawn)
-	{
-		auto PossessedTank = Cast<ATank>(InPawn);
-		if (!ensure(PossessedTank)) { return; }
-
-		// Subscribe our local method to the tank's death event
-		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnPossedTankDeath);
-	}
-}
-
-void ATankPlayerController::OnPossedTankDeath()
-{
-	StartSpectatingOnly();
+	ControlledTank = nullptr;
+	
 }
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!GetPawn())
-	{
-		UE_LOG(XXXXX_Log_BT, Warning, TEXT("[%s] no pawn found"), *this->GetName());
-		return;
-	}
+	Init();
+}
 
-	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
-	if (!ensure(AimingComponent)) { return; }
-	FoundAimingComponent(AimingComponent);
+void ATankPlayerController::Init()
+{
 
-	// WIDGETS ------------ //
-	if (wPlayerUI)
+}
+
+void ATankPlayerController::CreatePlayerUIWidget()
+{
+	//~ WIDGETS ------------ //
+	if (PlayerUIClass)
 	{
-		PlayerUI = CreateWidget<UBT_UserWidget>(this, wPlayerUI);
+		PlayerUI = CreateWidget<UBT_UserWidget>(this, PlayerUIClass);
 		if (PlayerUI)
 		{
 			PlayerUI->AddToViewport();
 			SetInputMode(FInputModeGameOnly());
 		}
 	}
-	else { UE_LOG(XXXXX_Log_BT, Warning, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
-
+	else { UE_LOG(XXXXX_Log_BT, Error, TEXT("[%s] no widget assigned in BPs for PlayerUI"), *this->GetName()); }
 	// WIDGETS ------------ //
+}
+
+void ATankPlayerController::PostTankInit(ATank* InTank)
+{
+	if (SetControlledTank(InTank))
+	{
+		// Subscribe our local method to the tank's death event
+		ControlledTank->OnDeath.AddDynamic(this, &ATankPlayerController::OnPossedTankDeath);
+	}
+	CreatePlayerUIWidget();
+}
+
+ATank* ATankPlayerController::SetControlledTank(ATank* Tank)
+{
+	if (!Tank) {
+		UE_LOG(XXXXX_Log_BT, Error, TEXT("[%s] SetControlledTank() Tank ref passed not valid"), *this->GetName());
+		return nullptr; }
+	if (Tank == ControlledTank)
+	{ return ControlledTank; }
+	ControlledTank = Tank;
+	if (!ensure(ControlledTank)) {
+		UE_LOG(XXXXX_Log_BT, Error, TEXT("[%s] ControlledTank not valid"), *this->GetName());
+		return nullptr;
+	}
+	return ControlledTank;
+}
+
+
+void ATankPlayerController::OnPossedTankDeath()
+{
+	StartSpectatingOnly();
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -66,18 +79,18 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
-/* AIMING -----------------  ---------------- */
+/*~ AIMING -----------------  ---------------- */
+#pragma region Aiming
+
 void ATankPlayerController::AimTowardsCrosshair()
 {
 	if (!GetPawn()) { return; } // e.g. if not possessing
-	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
-	if (!ensure(AimingComponent)) { return; }
 
 	FVector HitLocation; // Out parameter
 	bool bGotHitLocation = GetSightRayHitLocation(HitLocation);
 	if (bGotHitLocation) // Has "side-effect", is going to line trace
 	{
-		AimingComponent->AimAt(HitLocation);
+		ControlledTank->GetTankAimingComponent()->AimAt(HitLocation);
 	}
 }
 
@@ -130,4 +143,4 @@ bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& 
 		LookDirection
 	);
 }
-/* AIMING ----------------  ---------------- */
+#pragma endregion Aiming
