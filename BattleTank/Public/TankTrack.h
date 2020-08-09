@@ -40,9 +40,9 @@ public:
 	void ToggleMovement(bool OnOrOff, float SlowAlpha);
 	
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankTrack")
-	float GetCurrentThrottle() { return CurrentThrottle; };
+	FORCEINLINE float GetCurrentThrottle() const { return CurrentThrottle; };
 
-	float GetLeftTrackOffset() {return OffsetL;};
+	FORCEINLINE float GetLeftTrackOffset() const {return OffsetL;};
 
 	/* // Obtained byy multiplying time * speed (TrackMaxDrivingForce)
 	// returns change in position in space according to current speed. */

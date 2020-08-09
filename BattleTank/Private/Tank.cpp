@@ -4,6 +4,7 @@
 #include "TankAimingComponent.h"
 #include "TankMovementComponent.h"
 #include "TankPlayerController.h"
+#include "BattleTankGameMode.h"
 #include "TankTurret.h"
 #include "TankTrack.h"
 
@@ -41,8 +42,6 @@ void ATank::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 	PlayerInputComponent->BindAxis("BT_TurnRightLeft", this, &ATank::TurnRightLeft);
 	PlayerInputComponent->BindAction("BT_Fire", EInputEvent::IE_Pressed, this, &ATank::FirePressed);
 	PlayerInputComponent->BindAction("BT_Fire", EInputEvent::IE_Released, this, &ATank::FireReleased);
-
-
 }
 
 void ATank::BeginPlay()
@@ -62,7 +61,6 @@ void FTankInput::Sanitize()
 	MovementInput = RawMovementInput.ClampAxes(-1.0f, 1.0f);
 	MovementInput.GetSafeNormal();
 	RawMovementInput.Set(0.0f, 0.0f);
-
 }
 
 void FTankInput::MoveX(float AxisValue)
@@ -147,7 +145,7 @@ bool ATank::PlayCameraShake(TSubclassOf<UCameraShake> CameraShakeToPlayType, flo
 {
 	if (CameraShakeToPlayType)
 	{
-		UGameplayStatics::GetPlayerController(this, 0)->ClientPlayCameraShake(CameraShakeToPlayType, Scale, PlaySpace);
+		GetController<ATankPlayerController>()->ClientPlayCameraShake(CameraShakeToPlayType, Scale, PlaySpace);
 		return true;
 	}
 	UE_LOG(XXXXX_Log_BT, Error, TEXT("[BT] [%s] CameraShakeToPlayType is not valid. Check BPs default reference is set "), *this->GetName());
@@ -156,6 +154,14 @@ bool ATank::PlayCameraShake(TSubclassOf<UCameraShake> CameraShakeToPlayType, flo
 
 void ATank::Init()
 {
+	if (GetController<ATankPlayerController>())
+	{
+		ABattleTankGameMode* GM = Cast<ABattleTankGameMode>(UGameplayStatics::GetGameMode(this));
+		if (GM)
+		{
+			GM->SetCurrentPlayState(EBT_PlayState::EBT_Playing);
+		}
+	}
 	CurrentHealth = StartingHealth;
 	if (EngineSound)
 	{
@@ -184,19 +190,40 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEv
 	CurrentHealth -= DamageToApply;
 	if (CurrentHealth <= 0)
 	{
-		OnDeath.Broadcast();
-		GetWorldTimerManager().SetTimer(RestartAfterDeathTimer, this, &ATank::RestartLevelWhenPlayerDie, 3.f);
+		// if owned by players TankPlayerController
+		if (GetController<ATankPlayerController>())
+		{
+			PlayerDie();
+		}
+		else
+		{
+			UE_LOG(XXXXX_Log_BT, Error, TEXT("[BT] [%s] ATankPlayerController not valid"), *this->GetName());
+		}
 	}
 	return DamageToApply;
 }
 
+void ATank::PlayerDie()
+{
+	GetWorldTimerManager().ClearTimer(RestartAfterDeathTimer);
+	GetWorldTimerManager().SetTimer(RestartAfterDeathTimer, this, &ATank::RestartLevelWhenPlayerDie, 1.f, false);
+	ABattleTankGameMode* GM = Cast<ABattleTankGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GM)
+	{
+		GM->SetCurrentPlayState(EBT_PlayState::EBT_GameOver);
+	}
+	OnDeath.Broadcast();
+}
+
 void ATank::RestartLevelWhenPlayerDie()
 {
-	ATankPlayerController* PC = Cast<ATankPlayerController>(GetController());
+	APlayerController* PC = GetController<APlayerController>();
 	if (PC)
 	{
+		UE_LOG(XXXXX_Log_BT, Log, TEXT("[BT] [%s] Level Reset !"), *this->GetName());
 		PC->RestartLevel();
 	}
+	GetWorldTimerManager().ClearTimer(RestartAfterDeathTimer);
 }
 
 ////////////////////  IDamageInterface  //////////////////////

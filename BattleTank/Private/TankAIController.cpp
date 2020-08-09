@@ -53,7 +53,9 @@ void ATankAIController::SetPawn(APawn* InPawn)
 	if (InPawn)
 	{
 		auto PossessedTank = Cast<ATank>(InPawn);
-		if (!PossessedTank) { return; }
+		if (!PossessedTank) {
+			UE_LOG(XXXXX_Log_BT, Error, TEXT("@@@ [%s] PossessedTank not valid "), *this->GetName());
+			return; }
 
 		// Subscribe our local method to the tank's death event
 		PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankAIController::OnPossedTankDeath);

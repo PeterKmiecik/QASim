@@ -7,7 +7,7 @@
 #include "RPS_InGameHUD.generated.h"
 
 /**
- * 
+ *  Main In Game HUD where RPS gameplay takes place
  */
 UCLASS()
 class ARPS_InGameHUD : public AHUD
@@ -15,21 +15,17 @@ class ARPS_InGameHUD : public AHUD
 	GENERATED_BODY()
 public:
 	ARPS_InGameHUD();
-
 	virtual void DrawHUD() override;
-
-
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	
-	UFUNCTION(BlueprintCallable, Category = "@@@ RPS HUD")
+	UFUNCTION(BlueprintCallable, Category = "@@@RPS|HUD")
 	 void UpdateCombatCount(int32 Value) ;
 	
-	UFUNCTION(BlueprintCallable, Category = "@@@ RPS HUD")
+	UFUNCTION(BlueprintCallable, Category = "@@@RPS|HUD")
 	void ResetCombo() ;
 
-	UPROPERTY(EditAnywhere, Category = "@@@ RPS HUD")
+	UPROPERTY(EditAnywhere, Category = "@@@RPS|HUD")
 	TSubclassOf < class UUserWidget > ComboWidgetClass;
 
 private:

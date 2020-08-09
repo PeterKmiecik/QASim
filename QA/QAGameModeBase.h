@@ -12,5 +12,7 @@ class QA_API AQAGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 public:
 
+	AQAGameModeBase();
+
 	
 };

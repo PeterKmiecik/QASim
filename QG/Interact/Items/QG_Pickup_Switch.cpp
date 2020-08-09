@@ -1,12 +1,13 @@
 #include "QG_Pickup_Switch.h"
 
 #include "Interact/Interactables/QG_LightSwitchSlot.h"
+#include "FirstPersonCharacter.h"
 
 #include "QG_GlobalDefines.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
-#include "FirstPersonCharacter.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Components/BoxComponent.h"
@@ -27,11 +28,15 @@ void AQG_Pickup_Switch::Use_Implementation()
 		this->bHidden = false;
 		InteractableMesh->SetVisibility(true);
 		FVector Transform = LightSwitchSlot->GetActorLocation();
-		TeleportTo(Transform, FRotator::ZeroRotator);
+		FVector TransformAbove = Transform;
+		TransformAbove.Z += 50.f;
+		TeleportTo(TransformAbove, FRotator::ZeroRotator);
+		bCanInteract = false;
+		TeleportTo(FMath::VInterpConstantTo(TransformAbove, Transform, GetWorld()->GetDeltaSeconds(), 3.f), FRotator::ZeroRotator);
 		this->AttachToActor(LightSwitchSlot,FAttachmentTransformRules::SnapToTargetNotIncludingScale,(TEXT("SwitchSocket")));
 		this->DisableComponentsSimulatePhysics();
 		LightSwitchSlot->bSwitchInPlace = true;
-		bCanInteract = false;
+		
 		bCanBeGrabbed = false;
 	}
 	else if (LightSwitchSlot && (LightSwitchSlot->bPlayerInRange == false))
@@ -51,4 +56,10 @@ void AQG_Pickup_Switch::Use_Implementation()
 void AQG_Pickup_Switch::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AQG_Pickup_Switch::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	//CheckForInteractables();
 }

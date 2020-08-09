@@ -80,10 +80,10 @@ public:
 	FTankDelegate OnDeath;
 
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank")
-	FORCEINLINE ATank* GetTankRef() { return this; }
+	FORCEINLINE ATank* GetTankRef()  { return this; }
 
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank")
-	UTankAimingComponent* GetTankAimingComponent() { return TankAimingComponent; };
+	FORCEINLINE UTankAimingComponent* GetTankAimingComponent() const { return TankAimingComponent; };
 
 	/* 	// Zeroing Turret rotation casued by tank rotation */
 	void StabilizeTurretYaw(float Throw);
@@ -101,6 +101,7 @@ public:
 	FORCEINLINE float GetTankAngularDampingDriving() { return TankAngularDampingDriving; }
 
 protected:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "@@@ BT|Tank")
 	UTankAimingComponent* TankAimingComponent;
 
@@ -116,14 +117,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "@@@ BT|Tank")
 	float HighEnginePitch = 2.f;
 
-	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank")
-	void Init();
-
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "@@@ BT|Tank|Movement")
 	bool bDrivngForward;
 	
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "@@@ BT|Tank|Movement")
 	bool bTurning;
+
+	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank")
+	void Init();
+
+	void PlayerDie();
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
@@ -138,6 +141,9 @@ private:
 	void FirePressed();
 	void FireReleased();
 	FTimerHandle RestartAfterDeathTimer;
+
+	/** Called by RestartAfterDeathTimer timer handle*/
+	UFUNCTION()
 	void RestartLevelWhenPlayerDie();
 
 	/* // Returns false, if CameraShakeToPlay is not valid (not set in BP defaults)

@@ -6,7 +6,7 @@
 #include "TankMovementComponent.generated.h"
 
 class UTankTrack;
-
+class ATank;
 
 
 /**
@@ -36,8 +36,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|Tank|TankMovementComponent")
 	TArray<UTankTrack*> GetTankTracks();
 
-	UTankTrack* GetLeftTrack() { return LeftTrack; };
-	UTankTrack* GetRightTrack() { return RightTrack; };
+	FORCEINLINE UTankTrack* GetLeftTrack() const { return LeftTrack; };
+	FORCEINLINE UTankTrack* GetRightTrack() const { return RightTrack; };
 protected:
 
 private:
@@ -60,7 +60,7 @@ private:
 	UTankTrack* LeftTrack = nullptr;
 	UTankTrack* RightTrack = nullptr;
 
-	class  ATank* GetTank() { return Tank; };
+	FORCEINLINE ATank* GetTank() const { return Tank; };
 
 	void CacheOwningTank();
 	ATank* Tank;

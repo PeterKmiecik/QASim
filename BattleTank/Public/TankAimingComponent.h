@@ -39,23 +39,20 @@ public:
 	int32 GetRoundsLeft() const;
 
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
-	UTankBarrel* GetBarrel() { return Barrel; };
+	FORCEINLINE UTankBarrel* GetBarrel() const { return Barrel; };
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
-	UTankTurret* GetTurret() { return Turret; };
+	FORCEINLINE UTankTurret* GetTurret() const { return Turret; };
 
 	UFUNCTION(BlueprintCallable, Category = "@@@ BT|TankAimingComponent")
-	EFiringState GetTankFiringState() { return FiringState; };
+	FORCEINLINE EFiringState GetTankFiringState() const { return FiringState; };
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "@@@ BT|TankAimingComponent")
 	EFiringState FiringState = EFiringState::Reloading;
 private:
 	UTankAimingComponent();
-
 	virtual void BeginPlay() override;
-
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-
 	void MoveBarrelTowards(FVector AimDirection);
 
 	bool IsBarrelMoving();

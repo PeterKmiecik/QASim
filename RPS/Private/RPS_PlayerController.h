@@ -22,16 +22,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 /**
- * Temporary TEST
  */
-	UFUNCTION(BlueprintCallable, Category = "@@@ RPS Controller")
-	 void CallComboHit();
+	UFUNCTION(BlueprintCallable, Category = "@@@ RPS|Controller")
+	void CallComboHit();
 
-
-/**
-* Temporary TEST
-*/
-	UFUNCTION(BlueprintCallable, Category = "@@@ RPS Controller")
+	/** Called by ComboResetHandle TimerHandle */
+	UFUNCTION(BlueprintCallable, Category = "@@@ RPS|Controller")
 	void ResetCombo();
 
 	template <typename ASpawnBP>
@@ -65,6 +61,7 @@ public:
 
 private:
 	int32 CurrentComboCount;
+
 	FTimerHandle ComboResetHandle;
 
 };
