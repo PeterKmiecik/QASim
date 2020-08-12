@@ -3,7 +3,7 @@
 
 # QASim
 # Game Tester Simulator
- WIP game I'm making in my spare time. Currently in prototype state which is mostly done in BPs. I move to C++ only  what I really need at this state.
+ WIP game I'm making in my spare time. Currently in prototype state which is mostly done in BPs. I move to C++ only working and tested minigames.
 
 ## Core Features:
 ### This is Your job ! Play games all day for living ! and..
