@@ -1,4 +1,3 @@
-
 #include "BPFL_Global.h"
 #include "QA.h"
 #include "QA/Private/UI/QAUserWidget.h"
@@ -11,8 +10,9 @@
 #include "Engine/World.h"
 #include "Engine/StreamableManager.h"
 
-DEFINE_LOG_CATEGORY(XXXX_Log_QA);
+DEFINE_LOG_CATEGORY(XXXXX_Log_QA);
 DEFINE_LOG_CATEGORY(XXXXX_Log_SHMUP);
+DEFINE_LOG_CATEGORY(XXXXX_Log_RPS);
 
 AQAGameModeBase* GetQAGameModeFromContextObject(class UObject* WorldContextObject)
 {
@@ -26,10 +26,10 @@ AQAGameModeBase* GetQAGameModeFromContextObject(class UObject* WorldContextObjec
 float UBPFL_Global::DotToTarget(AActor* FromActor, AActor* TargetActor, FString FromWhereErrorMsg)
 {
 	if (!FromActor) {
-		UE_LOG(XXXX_Log_QA, Warning, TEXT("@@@ [QA] [BPFL_Global] function called from [%s]: DotToTarget() parameter: FromActor passed was nullptr"), *FromWhereErrorMsg);
+		UE_LOG(XXXXX_Log_QA, Warning, TEXT("@@@ [QA] [BPFL_Global] function called from [%s]: DotToTarget() parameter: FromActor passed was nullptr"), *FromWhereErrorMsg);
 		return -2.f;}
 	if (!TargetActor) {
-		UE_LOG(XXXX_Log_QA, Warning, TEXT("@@@ [QA] [BPFL_Global] function called from [%s]: DotToTarget() parameter: TargetActor passed was nullptr"), *FromWhereErrorMsg);
+		UE_LOG(XXXXX_Log_QA, Warning, TEXT("@@@ [QA] [BPFL_Global] function called from [%s]: DotToTarget() parameter: TargetActor passed was nullptr"), *FromWhereErrorMsg);
 		return -2.f;}
 	FVector FromActorLocation = FromActor->GetActorLocation();
 	FVector DirectionToTarget = (TargetActor->GetActorLocation() - FromActorLocation).GetSafeNormal2D();
@@ -48,7 +48,7 @@ FName UBPFL_Global::OpenLevel (UObject* WorldContextObject, TSoftObjectPtr<UObje
 	}
 
 	if (!NextLevel.Get()) { 
-		UE_LOG(XXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function called from [%s] OpenLevel() NextLevel is not valid."), *FromWhereErrorMsg);
+		UE_LOG(XXXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function called from [%s] OpenLevel() NextLevel is not valid."), *FromWhereErrorMsg);
 		return FName(); }
 
 	UWorld* const MyWorld = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
@@ -73,14 +73,14 @@ FName UBPFL_Global::OpenLevel (UObject* WorldContextObject, TSoftObjectPtr<UObje
 	}
 	else
 	{
-		UE_LOG(XXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] UBPFL_GlobalObject not vaild"));
+		UE_LOG(XXXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] UBPFL_GlobalObject not vaild"));
 	}
 	return	bLevelNameSplit ? LevelToLoadName : FName();
 }
 
 void UBPFL_Global::OpenLevelDelayed(bool LevelNameWasSplit, UObject* WorldContextObject, FName LevelToLoadName)
 {
-	UE_LOG(XXXX_Log_QA, Log, TEXT("@@@ [QA] [BPFL_Global] OpenedLevel: %s"), *LevelToLoadName.ToString());
+	UE_LOG(XXXXX_Log_QA, Log, TEXT("@@@ [QA] [BPFL_Global] OpenedLevel: %s"), *LevelToLoadName.ToString());
 	LevelNameWasSplit ? UGameplayStatics::OpenLevel(WorldContextObject, LevelToLoadName) : false;
 }
 
@@ -88,7 +88,7 @@ UBPFL_Global* UBPFL_Global::GetBPFL_GlobalObject(UObject* WorldContextObject)
 {
 	if (!WorldContextObject)
 	{
-		UE_LOG(XXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: GetUBPFL_GlobalObject(...) WorldContextObject not vaild"));
+		UE_LOG(XXXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: GetUBPFL_GlobalObject(...) WorldContextObject not vaild"));
 		return nullptr;
 	}
 	return GetQA_GameInstance(WorldContextObject) ? GetQA_GameInstance(WorldContextObject)->GetBPFL_GlobalObject() : nullptr;
@@ -98,7 +98,7 @@ UBPFL_Global* UBPFL_Global::GetBPFL_GlobalObject(UObject* WorldContextObject)
 void UBPFL_Global::CacheBPFL_GlobalObjectRef(UQA_GameInstance* InGameInstance, UObject* WorldContextObject)
 {
 	if (!InGameInstance) {
-		UE_LOG(XXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: CacheGameInstanceRef(...) parameter InGameInstance not vaild"));
+		UE_LOG(XXXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: CacheGameInstanceRef(...) parameter InGameInstance not vaild"));
 		return;
 	}
 	InGameInstance->SetBPFL_GlobalObject(UBPFL_Global::StaticClass()->GetDefaultObject<UBPFL_Global>(), WorldContextObject);

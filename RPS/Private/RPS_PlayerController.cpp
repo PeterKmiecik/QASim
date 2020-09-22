@@ -2,6 +2,8 @@
 
 #include "RPS_PlayerController.h"
 #include "RPS_InGameHUD.h"
+#include "BPFL_Global.h"
+
 
 #include "Engine/World.h"
 #include "TimerManager.h"
@@ -34,7 +36,7 @@ void ARPS_PlayerController::CallComboHit()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("@@@@@ [%s] InGameHud ref is nulltpr in CallComboHit()"),*this->GetName());
+		UE_LOG(XXXXX_Log_RPS, Error, TEXT("@@@ [%s] InGameHud ref is nulltpr in CallComboHit()"),*this->GetName());
 	}
 
 	if (GetWorld()->GetTimerManager().IsTimerActive(ComboResetHandle))
@@ -59,7 +61,7 @@ void ARPS_PlayerController::ResetCombo()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("@@@@@ [%s] InGameHud ref is nulltpr in ResetCombo()"), *this->GetName());
+		UE_LOG(XXXXX_Log_RPS, Log, TEXT("@@@ [%s] InGameHud ref is nulltpr in ResetCombo()"), *this->GetName());
 	}
 }
 

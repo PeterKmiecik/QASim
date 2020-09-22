@@ -19,7 +19,7 @@ void UQA_GameInstance::SetBPFL_GlobalObject(UBPFL_Global* InUBPFL_GlobalObject, 
 {
 	if (!InUBPFL_GlobalObject)
 	{
-		UE_LOG(XXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: SetUBPFL_GlobalObject(...): InUBPFL_GlobalObject parameter not vaild"));
+		UE_LOG(XXXXX_Log_QA, Error, TEXT("@@@ [QA] [BPFL_Global] function: SetUBPFL_GlobalObject(...): InUBPFL_GlobalObject parameter not vaild"));
 		return;
 	}
 	Cast<UQA_GameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject))->BPFL_GlobalObject = InUBPFL_GlobalObject;

@@ -2,6 +2,7 @@
 
 #include "RPS.h"
 #include "Modules/ModuleManager.h"
+#include "BPFL_Global.h"
 
 DEFINE_LOG_CATEGORY(RPS);
 

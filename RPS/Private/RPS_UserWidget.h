@@ -13,30 +13,14 @@ UCLASS()
 class URPS_UserWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
 public:
 
 	URPS_UserWidget(const FObjectInitializer& ObjectInitializer);
 
-	/* similar to begin play*/
+
+
+protected:
 	virtual void NativeConstruct() override;
-
-	void UpdateComboCount(int32 Value);
-
-	void ResetCombo();
-
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyProject", meta = (BindWidget))
-	class UTextBlock* TXTCombo;
-
-	class UWidgetAnimation* GetAnimationByName(FName AnimationName) const;
-
-	void StoreWidgetAnimations();
-
 private:
-	TMap < class FName, UWidgetAnimation* > AniamtionsMap;
-
-	 UWidgetAnimation* ComboFadeAnimation;
-	UWidgetAnimation* ComboShakeAnimation;
 
 };

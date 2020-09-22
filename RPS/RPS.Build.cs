@@ -10,7 +10,7 @@ public class RPS : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "QA" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "QA" });
 
         PublicIncludePaths.AddRange(new string[] { "RPS/Public" });
 
